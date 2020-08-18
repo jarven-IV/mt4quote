@@ -1,0 +1,235 @@
+<extend name="Base:base"/>
+<block name="content">
+    <!-- 顶部开始 -->
+    <body>
+    <div class="x-nav">
+        <!--    <span class="layui-breadcrumb">
+                <a href="">首页</a>
+                <a href="">通道管理</a>
+                <a>
+                    <cite>通道列表</cite></a>
+            </span>-->
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+           onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <!--   <div class="layui-card-body ">
+                           <form class="layui-form layui-col-space5">
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <input class="layui-input" placeholder="开始日" name="start" id="start"></div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <input class="layui-input" placeholder="截止日" name="end" id="end"></div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <select name="contrller">
+                                       <option>支付方式</option>
+                                       <option>支付宝</option>
+                                       <option>微信</option>
+                                       <option>货到付款</option></select>
+                               </div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <select name="contrller">
+                                       <option value="">订单状态</option>
+                                       <option value="0">待确认</option>
+                                       <option value="1">已确认</option>
+                                       <option value="2">已收货</option>
+                                       <option value="3">已取消</option>
+                                       <option value="4">已完成</option>
+                                       <option value="5">已作废</option></select>
+                               </div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <input type="text" name="username" placeholder="请输入订单号" autocomplete="off" class="layui-input"></div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                                       <i class="layui-icon">&#xe615;</i></button>
+                               </div>
+                           </form>
+                       </div>-->
+                    <div class="layui-card-header">
+                        <!--       <button class="layui-btn layui-btn-danger" onclick="delAll()">
+                                   <i class="layui-icon"></i>批量删除
+                               </button>-->
+                        <button class="layui-btn" onclick="add('添加用户','/Admin/index/userAdd',800,550)">
+                            <i class="layui-icon"></i>添加用户
+                        </button>
+                    </div>
+                    <div class="layui-card-body ">
+                        <table class="layui-table layui-form" id="userListID">
+                            <thead>
+                            <tr>
+                                <!-- <th>
+                                     <input type="checkbox" name="" lay-skin="primary">
+                                 </th>-->
+                                <th>编号</th>
+                                <th>用户名</th>
+                                <th>创建时间</th>
+                                <th>角色</th>
+                                <th>品种</th>
+                               <th>设置</th>
+                                <th>删除</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <volist name="list" id="vo">
+                                <tr>
+                                    <!--  <td>
+                                          <input type="checkbox" name="" lay-skin="primary"></td>-->
+                                    <td>{$vo.id}</td>
+                                    <td>{$vo.name}</td>
+                                    <td>{$vo.created_at}</td>
+                                    <td><?php echo $vo['is_admin'] > 1 ? '管理员':'普通用户'; ?></td>
+                                    <td>{$vo.symbols}</td>
+                                    <!--   <?php $name = $vo['name'];?>-->
+
+                                    <td><a title="修改用户品种" onclick="add('修改用户品种','/admin/index/setUserSymbol?id='+'{$vo[id]}')" href="javascript:;">
+                                        <i class="layui-icon">&#xe63c;</i>修改用户品种</a></td>
+                                  <td><a title="删除用户" onclick="member_del(this,'{$vo[id]}')" href="javascript:;">
+                                        <i class="layui-icon">&#xe63c;</i>删除用户</a></td>
+                                </tr>
+                            </volist>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="layui-card-body ">
+                        {$page}
+                        <!-- <div class="page">
+                             <div>
+                                 <a class="prev" href="">&lt;&lt;</a>
+                                 <a class="num" href="">1</a>
+                                 <span class="current">2</span>
+                                 <a class="num" href="">3</a>
+                                 <a class="num" href="">489</a>
+                                 <a class="next" href="">&gt;&gt;</a></div>
+                         </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    <script>layui.use(['laydate', 'form'],
+        function () {
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start' //指定元素
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end' //指定元素
+            });
+        });
+      
+      function reloadData() {
+        window.location.reload();
+    }
+
+    function add(title,url,w,h,full) {
+        if (title == null || title == '') {
+            var title=false;
+        };
+        if (url == null || url == '') {
+            var url="404.html";
+        };
+        if (w == null || w == '') {
+            var w=($(window).width()*0.9);
+        };
+        if (h == null || h == '') {
+            var h=($(window).height() - 50);
+        };
+        layer.open({
+            type: 2,
+            area: [w+'px', h +'px'],
+            fix: false, //不固定
+            maxmin: true,
+            shadeClose: true,
+            shade:0.4,
+            title: title,
+            content: url ,
+            zIndex:layer.zIndex //重点1
+            ,
+            end: function () {
+                window.location.reload();
+            }
+        });
+    }
+    /*用户-停用*/
+    function member_stop(obj, id) {
+        layer.confirm('确认要停用吗？',
+            function (index) {
+
+                if ($(obj).attr('title') == '启用') {
+
+                    //发异步把用户状态进行更改
+                    $(obj).attr('title', '停用');
+                    $(obj).find('i').html('&#xe62f;');
+
+                    $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                    layer.msg('已停用!', {
+                        icon: 5,
+                        time: 1000
+                    });
+
+                } else {
+                    $(obj).attr('title', '启用');
+                    $(obj).find('i').html('&#xe601;');
+
+                    $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
+                    layer.msg('已启用!', {
+                        icon: 5,
+                        time: 1000
+                    });
+                }
+
+            });
+    }
+
+    /*用户-删除*/
+    function member_del(obj, id) {
+        layer.confirm('确认要删除吗？',
+            function (index) {
+                //发异步删除数据
+
+                $.post("delUser",{id:id},function(res){
+                    if(res.status == 1){
+                        $(obj).parents("tr").remove();
+                        layer.msg('已删除!', {
+                            icon: 1,
+                            time: 1000
+                        });
+                    }else{
+                        layer.msg('删除失败', {
+                            icon: 5,
+                            time: 1000
+                        });
+                    }
+
+                })
+
+
+            });
+    }
+
+    function delAll(argument) {
+
+        var data = tableCheck.getData();
+
+        layer.confirm('确认要删除吗？' + data,
+            function (index) {
+                //捉到所有被选中的，发异步进行删除
+                layer.msg('删除成功', {
+                    icon: 1
+                });
+                $(".layui-form-checked").not('.header').parents('tr').remove();
+            });
+    }</script>
+
+</block>

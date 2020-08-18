@@ -1,0 +1,147 @@
+<extend name="Base:base"/>
+<block name="content">
+    <body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form" action="" method="post">
+                <input type="hidden" name="id" value={$id}>
+                <div class="layui-form-item">
+                   <label for="username" class="layui-form-label">
+                        <span class="x-red">*</span>状态:</label>
+                    <div class="layui-input-inline">
+                        <?php if($symbol['flag'] == 1){?>
+                        禁用<input type="radio" id="flag" name="flag" required="" lay-verify="required"
+                               autocomplete="off" class="layui-form-radio" value="0" disabled>
+                        <input type="radio" id="flag" name="flag" required="" lay-verify="required"
+                               autocomplete="off" class="layui-form-radio" value="1" disabled>
+                        启用 <input type="radio" id="" name="flag" required="" lay-verify="required"
+                               autocomplete="off" class="layui-form-radio" value="1" checked="true">
+                        <?php }else{?>
+                        禁用<input type="radio" id="flag" name="flag" required="" lay-verify="required"
+                                 autocomplete="off" class="layui-form-radio" value="0" checked="true">
+                        <input type="radio" id="flag" name="flag" required="" lay-verify="required"
+                               autocomplete="off" class="layui-form-radio" value="1" disabled>
+                        启用 <input type="radio" id="" name="flag" required="" lay-verify="required"
+                                  autocomplete="off" class="layui-form-radio" value="1" disabled>
+                        <?php }?>
+                    </div>
+                </div>
+                <!--<div class='layui-form-item'>-->
+                <!--    <label class="layui-form-label">调整次数：</label>-->
+                <!--    <div class="layui-input-block">-->
+                <!--        <input type="radio" name="no_repeat_set" value="1" title="只修改行情一次" <?php echo $symbol['no_repeat_set'] == 1 ? 'checked' : '' ?>>-->
+                <!--        <input type="radio" name="no_repeat_set" value="0" title="持续修改" <?php  echo $symbol['no_repeat_set'] == 0 ?  'checked' : '' ?>>-->
+                <!--    </div>-->
+                <!--</div>-->
+                <input type="hidden" name="no_repeat_set" id="" value="0" />
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        <span class="x-red">*</span>mode:</label>
+                    <div class="layui-input-inline">
+                    	<?php 
+                    	$mode = '';
+                    		switch($symbol['mode']){
+                    		case 0:$mode =  '0:bid价格';break;
+                    		case 1:$mode =  '1:ask价格';break;
+                    		case 2:$mode = '2:按照倍率';break;
+                    		case 3:$mode = '3:中间价格';break;
+                    		case 4:$mode = '4:bid偏移价格';break;
+                    		case 5:$mode = '5:滑点基数';break;
+                    		}
+                    	?>
+                	<input type="test" required="" lay-verify="required"
+                           autocomplete="off" class="layui-input" value="{$mode}" disabled>
+                    <input type="hidden" id="mode" name="mode" required="" lay-verify="required"
+                               autocomplete="off" class="layui-input" value="{$symbol.mode}">
+                       
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        <span class="x-red">*</span>value:</label>
+                    <div class="layui-input-inline">
+                        <input type="number" id="value" name="value" required="" lay-verify="required"
+                               autocomplete="off" class="layui-input" value="{$symbol.value}">
+
+                    </div>
+                </div>
+            </form>
+
+            </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label for="L_repass" class="layui-form-label"></label>
+        <button class="layui-btn" lay-filter="add" lay-submit="">提交</button>
+    </div>
+
+    </div>
+    </div>
+    <script>layui.use(['form', 'layer'],
+        function () {
+            $ = layui.jquery;
+            var form = layui.form,
+                layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({
+                nikename: function (value) {
+                    if (value.length < 5) {
+                        return '昵称至少得5个字符啊';
+                    }
+                },
+                pass: [/(.+){6,12}$/, '密码必须6到12位'],
+                repass: function (value) {
+                    if ($('#L_pass').val() != $('#L_repass').val()) {
+                        return '两次密码不一致';
+                    }
+                }
+            });
+
+            //监听提交
+            form.on('submit(add)',
+                function (data) {
+                    console.log(data);
+                    //发异步，把数据提交给php
+                    $.post("/Home/index/post_set_symbol", $('.layui-form').serialize(), function (res) {
+                        if (res.status == 0) {
+                            layer.alert(res.msg, {
+                                    icon: 5
+                                },
+                                function () {
+                                    // 获得frame索引
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    //关闭当前frame
+                                    parent.location.reload();
+                                    parent.layer.close(index);
+                                });
+                            return false;
+                        }
+                        layer.alert(res.msg, {
+                                icon: 6
+                            },
+                            function () {
+                                // 获得frame索引
+                                //var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                //parent.layer.close(index);
+                                parent.location.reload();
+                            });
+                    });
+
+                    return false;
+                });
+
+        });</script>
+    <script>var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();</script>
+    </body>
+
+</block>

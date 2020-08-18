@@ -1,0 +1,249 @@
+<extend name="Base:base"/>
+<block name="content">
+
+    <body>
+    <div class="x-nav">
+
+
+
+            <!--<span class="layui-breadcrumb">
+                <a href="">首页</a>
+                <a href="">订单管理</a>
+                <a>
+                    <cite>订单列表</cite></a>
+            </span>-->
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+           onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+
+
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+
+
+
+                    <!--   <div class="layui-card-body ">
+                           <form class="layui-form layui-col-space5">
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <input class="layui-input" placeholder="开始日" name="start" id="start"></div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <input class="layui-input" placeholder="截止日" name="end" id="end"></div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <select name="contrller">
+                                       <option>支付方式</option>
+                                       <option>支付宝</option>
+                                       <option>微信</option>
+                                       <option>货到付款</option></select>
+                               </div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <select name="contrller">
+                                       <option value="">订单状态</option>
+                                       <option value="0">待确认</option>
+                                       <option value="1">已确认</option>
+                                       <option value="2">已收货</option>
+                                       <option value="3">已取消</option>
+                                       <option value="4">已完成</option>
+                                       <option value="5">已作废</option></select>
+                               </div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <input type="text" name="username" placeholder="请输入订单号" autocomplete="off" class="layui-input"></div>
+                               <div class="layui-input-inline layui-show-xs-block">
+                                   <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                                       <i class="layui-icon">&#xe615;</i></button>
+                               </div>
+                           </form>
+                       </div>-->
+                    <div class="layui-card-header">
+
+                            <form class="layui-form layui-col-space5" method="get" action="">
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="order_no" placeholder="请输入订单号" autocomplete="off" class="layui-input"></div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                                        <i class="layui-icon">&#xe615;</i></button>
+                                </div>
+                            </form>
+
+
+
+                        <!--    <button class="layui-btn layui-btn-danger" onclick="delAll()">
+                                <i class="layui-icon"></i>批量删除
+                            </button>
+                            <button class="layui-btn" onclick="xadmin.open('添加通道','/channel/channel_add',400,250)">
+                                <i class="layui-icon"></i>添加
+                            </button>-->
+                    </div>
+                    <div class="layui-card-body ">
+                        <table class="layui-table layui-form">
+                            <thead>
+                            <tr>
+                               <!-- <th>
+                                    <input type="checkbox" name="" lay-skin="primary">
+                                </th>-->
+                                <th>编号</th>
+                                <th>订单号</th>
+                                <th>通道代号</th>
+                                <th>付款码备注</th>
+                                <th>收款码</th>
+                                <th>用户编号</th>
+                                <th>充值金额</th>
+                                <th>实际金额</th>
+                                <th>到账状态</th>
+                                <th>充值时间</th>
+                                <th>回调地址</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <volist name="list" id="vo">
+                                <tr>
+                                    <!--<td>
+                                        <input type="checkbox" name="" lay-skin="primary"></td>-->
+                                    <td>{$vo.id}</td>
+                                    <td>{$vo.order_no}</td>
+                                    <td>{$vo.channel}</td>
+                                    <td>{$vo.note}</td>
+                                    <td>{$vo.url}</td>
+                                    <td>{$vo.uid}</td>
+                                    <td>{$vo.amount}</td>
+                                    <td>{$vo.apply_amount}</td>
+                                    <td><?php if($vo['status'] == 2){echo "已到账";}else{echo "未到账";} ?></td>
+                                    <td>{$vo.created_at}</td>
+                                    <td>{$vo.notify_url}</td>
+                                    <td>
+                                        <?php $id = $vo['id'];?>
+                                        <?php if($vo['status'] == 1){ ?>
+                                        <a title="" onclick="xadmin.open('确认到账','/Order/confirm_order_form?id='+'{$id}',400,200)" href="javascript:;">
+                                        <i class="layui-icon">&#xe63c;</i>确认订单</a>
+                                        <?php } ?>
+                                          <?php if($vo['status'] == 2){ ?>
+                                        <a title="" onclick="member_del(this,{$id})" href="javascript:;">
+                                            <i class="layui-icon">&#xe63c;</i>补发通知</a>
+                                           <?php } ?>
+                                    </td>
+                                  <!--
+                                    <td class="td-manage">
+                                        <?php $id = $vo['id'];?>
+                                        <a title="确认到账" onclick="member_del(this,{$id})" href="javascript:;">
+                                            确认到账</a>
+                                    </td>-->
+                                </tr>
+                            </volist>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="layui-card-body ">
+                        {$page}
+                        <!-- <div class="page">
+                             <div>
+                                 <a class="prev" href="">&lt;&lt;</a>
+                                 <a class="num" href="">1</a>
+                                 <span class="current">2</span>
+                                 <a class="num" href="">3</a>
+                                 <a class="num" href="">489</a>
+                                 <a class="next" href="">&gt;&gt;</a></div>
+                         </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    <script>layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#start' //指定元素
+                });
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#end' //指定元素
+                });
+            });
+
+    /*用户-停用*/
+    function member_stop(obj, id) {
+        layer.confirm('确认要停用吗？',
+                function (index) {
+
+                    if ($(obj).attr('title') == '启用') {
+
+                        //发异步把用户状态进行更改
+                        $(obj).attr('title', '停用');
+                        $(obj).find('i').html('&#xe62f;');
+
+                        $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                        layer.msg('已停用!', {
+                            icon: 5,
+                            time: 1000
+                        });
+
+                    } else {
+                        $(obj).attr('title', '启用');
+                        $(obj).find('i').html('&#xe601;');
+
+                        $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
+                        layer.msg('已启用!', {
+                            icon: 5,
+                            time: 1000
+                        });
+                    }
+
+                });
+    }
+
+    /*用户-删除*/
+    function member_del(obj, id) {
+   /*     layer.open({
+            title: '补发通知'
+            ,content: '确定补发通知吗？'
+        });*/
+        layer.confirm('确定补发通知吗？',
+                function (index) {
+                    //发异步删除数据
+
+                    $.post("/order/re_send",{id:id},function(res){
+                        if(res.status == 1){
+                            $(obj).parents("tr").remove();
+                            layer.msg('补发成功!', {
+                                icon: 1,
+                                time: 1000
+                            });
+                        }else{
+                            layer.msg('操作失败', {
+                                icon: 5,
+                                time: 1000
+                            });
+                        }
+
+                    })
+
+
+                });
+    }
+
+    function delAll(argument) {
+
+        var data = tableCheck.getData();
+
+        layer.confirm('确认要删除吗？' + data,
+                function (index) {
+                    //捉到所有被选中的，发异步进行删除
+                    layer.msg('删除成功', {
+                        icon: 1
+                    });
+                    $(".layui-form-checked").not('.header').parents('tr').remove();
+                });
+    }</script>
+
+</block>

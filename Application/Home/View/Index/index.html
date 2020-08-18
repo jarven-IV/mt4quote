@@ -1,0 +1,215 @@
+<extend name="Base:base"/>
+<block name="content">
+    <!-- 顶部开始 -->
+    <body>
+
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                   
+                   
+                    <div class="layui-card-body ">
+        	            <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
+			<script type="text/html" id="table-content-list">
+
+                    <a title="设置参数" onclick="add('设置参数','/Home/index/set_symbol?id={{ d.id }}',600,450)" href="javascript:;">
+                                        <i class="layui-icon">&#xe63c;</i>设置参数</a> &nbsp;
+                                  
+            </script>
+
+                       
+                  
+            </div>
+        </div>
+    </div>
+    </body>
+    <script>layui.use(['laydate', 'form','table'],
+            function () {
+                var laydate = layui.laydate,
+                table = layui.table;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#start' //指定元素
+                });
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#end' //指定元素
+                });
+
+                $('#switch_flag').change(function(){
+                    if ($(this).is(":checked")){
+                        var flag = 1;
+                    }else{
+                        var flag = 0;
+                    }
+                    console.log(flag);
+                    $.post("plug_status",{flag:flag},function(res){
+						if (res.status == 0) {
+                            layer.alert(res.msg, {
+                                    icon: 5
+                                },
+                                function () {
+                                    // 获得frame索引
+                                    var index = parent.layer.getFrameIndex(window.name);
+                                    //关闭当前frame
+                                    parent.layer.close(index);
+                                });
+                            return false;
+                        }
+                        layer.alert(res.msg, {
+                                icon: 6
+                            },
+                            function () {
+
+                                parent.document.reload();
+                            });
+                    })
+                });
+
+			table.render({
+	            elem: '#LAY-app-content-list'
+	            , url: '/Home/index/symbol_page' //模拟接口
+	            , cols: [[
+	                {field: 'id', width: 50, title: '编号', sort: true},
+	                {field: 'symbol', title: '品种'},
+	                {field: 'flag', title: '状态'},
+	                {field: 'mode', title: '模式',
+	                templet:function(d){
+	                    if (d.mode=="0"){
+	                        return 'bid价格'
+	                    }
+	                    if (d.mode=="1"){
+	                        return 'ask价格'
+	                    }
+	                    if (d.mode=="2"){
+	                        return '按照倍率'
+	                    }
+	                    if (d.mode=="3"){
+	                        return '中间价格'
+	                    }
+	                    if (d.mode=="4"){
+	                        return 'bid偏移价格'
+	                    }
+	                    if (d.mode=="5"){
+	                        return '滑点基数'
+	                    }
+
+	                }
+	                },
+	                {field: 'value',title:'value'},
+	                {title: '操作',  align: 'center', fixed: 'right', toolbar: '#table-content-list'}
+	            ]]
+	            , page: true
+	            , limit: 30
+	            , height: 'full-220'
+	            , text: '对不起，加载出现异常！'
+	        });
+			
+            });
+
+    function add(title,url,w,h,full) {
+        if (title == null || title == '') {
+            var title=false;
+        };
+        if (url == null || url == '') {
+            var url="404.html";
+        };
+        if (w == null || w == '') {
+            var w=($(window).width()*0.9);
+        };
+        if (h == null || h == '') {
+            var h=($(window).height() - 50);
+        };
+        layer.open({
+            type: 2,
+            area: [w+'px', h +'px'],
+            fix: false, //不固定
+            maxmin: true,
+            shadeClose: true,
+            shade:0.4,
+            title: title,
+            content: url ,
+            zIndex:layer.zIndex //重点1
+            ,
+            end: function () {
+                window.location.reload();
+            }
+        });
+    }
+
+    /*用户-停用*/
+    function member_stop(obj, id) {
+        layer.confirm('确认要停用吗？',
+                function (index) {
+
+                    if ($(obj).attr('title') == '启用') {
+
+                        //发异步把用户状态进行更改
+                        $(obj).attr('title', '停用');
+                        $(obj).find('i').html('&#xe62f;');
+
+                        $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                        layer.msg('已停用!', {
+                            icon: 5,
+                            time: 1000
+                        });
+
+                    } else {
+                        $(obj).attr('title', '启用');
+                        $(obj).find('i').html('&#xe601;');
+
+                        $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
+                        layer.msg('已启用!', {
+                            icon: 5,
+                            time: 1000
+                        });
+                    }
+
+                });
+    }
+
+    /*用户-删除*/
+    function symbol_del(obj, id) {
+        layer.confirm('确认要删除吗？',
+                function (index) {
+                    //发异步删除数据
+
+                    $.post("delSymbol",{id:id},function(res){
+                        if(res.status == 1){
+                            $(obj).parents("tr").remove();
+                            layer.msg('已删除!', {
+                                icon: 1,
+                                time: 1000
+                            });
+                        }else{
+                            layer.msg('删除失败', {
+                                icon: 5,
+                                time: 1000
+                            });
+                        }
+
+                    })
+
+
+                });
+    }
+
+    function delAll(argument) {
+
+        var data = tableCheck.getData();
+
+        layer.confirm('确认要删除吗？' + data,
+                function (index) {
+                    //捉到所有被选中的，发异步进行删除
+                    layer.msg('删除成功', {
+                        icon: 1
+                    });
+                    $(".layui-form-checked").not('.header').parents('tr').remove();
+                });
+    }</script>
+
+</block>

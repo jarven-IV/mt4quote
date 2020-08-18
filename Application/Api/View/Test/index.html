@@ -1,0 +1,33 @@
+<html>
+<head>
+</head>
+<body>
+<h1>付款测试</h1>
+<input type="text" placeholder="请输入付款金额" id="amount">
+<button id="sub">提交</button>
+
+
+</body>
+　　<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+    $(function(){
+
+        $("#sub").click(function(){
+            var amount = $("#amount").val();
+            $.post("/api/pay/get_pay_url",{amount:amount},function(res){
+                if(res.status == 0){
+                    alert(res.msg);
+                    return false;
+                }else{
+                    var url = res.pay_url;
+                    window.location.href = url;
+                }
+            })
+
+
+        })
+    })
+
+
+</script>
+</html>
